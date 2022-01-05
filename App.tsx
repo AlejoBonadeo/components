@@ -1,20 +1,76 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import React, {useState} from 'react';
+import {Button, FlatList, StyleSheet, TextInput, View} from 'react-native';
+import TaskComponent from './src/components/TaskComponent';
 
-
-const App = () => {
-  return (
-    <View style={{
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <Text style={{
-        fontSize: 20,
-        color: 'black'
-      }}>Hola Coder</Text>
-    </View>
-  )
+export interface Task {
+  task: string;
+  completed: boolean;
 }
 
-export default App
+const App = () => {
+  const [task, setTask] = useState('');
+  const [taskList, setTaskList] = useState<Task[]>([]);
+
+  const createTask = () => {
+    if(!task.trim()) return
+    setTaskList([
+      ...taskList,
+      {
+        task,
+        completed: false,
+      },
+    ]);
+    setTask('');
+  }
+
+  return (
+    <>
+      <View
+        style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          value={task}
+          onChangeText={setTask}
+        />
+        <Button
+          title="send"
+          color="#9191E9"
+          onPress={createTask}
+        />
+      </View>
+      <View
+        style={styles.listContainer}>
+        <FlatList
+          data={taskList}
+          renderItem={({item}) => (
+            <TaskComponent
+            item={item}
+            setTaskList={setTaskList}
+            />
+          )}
+        />
+      </View>
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  searchContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  searchInput: {
+    borderBottomWidth: 2,
+    width: 250,
+    height: 35,
+  },
+  listContainer: {
+    flex: 1,
+    marginLeft: 50,
+    justifyContent: 'flex-start',
+  }
+})
+
+export default App;
